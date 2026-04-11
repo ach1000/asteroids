@@ -26,10 +26,10 @@ Dependencies are managed via `pyproject.toml`. A virtual environment is expected
 The project is at a very early skeleton stage:
 
 - **`main.py`** — Entry point. Initialises pygame, opens a 1280×720 window, and runs the game loop. The loop calls `log_state()`, processes the pygame event queue (exits on `QUIT`), fills the screen black, and flips the display.
-- **`constants.py`** — Module for magic-number constants. Defines `SCREEN_WIDTH = 1280`, `SCREEN_HEIGHT = 720`, `PLAYER_RADIUS = 20`, `LINE_WIDTH = 2`. All future magic numbers (speeds, sizes, etc.) should go here.
+- **`constants.py`** — Module for magic-number constants. Defines `SCREEN_WIDTH = 1280`, `SCREEN_HEIGHT = 720`, `PLAYER_RADIUS = 20`, `LINE_WIDTH = 2`, `PLAYER_TURN_SPEED = 300`. All future magic numbers (speeds, sizes, etc.) should go here.
 - **`logger.py`** — Logging utility. Exports `log_state()` (call once per game-loop tick; snapshots sprite groups to `game_state.jsonl` at ~1 fps for up to 16 s) and `log_event()` (write discrete events to `game_events.jsonl`). Called each frame from `main.py`.
 - **`circleshape.py`** — Abstract base class `CircleShape(pygame.sprite.Sprite)`. Stores `position` (Vector2), `velocity` (Vector2), and `radius`. Subclasses must override `draw(screen)` and `update(dt)`. Uses `self.containers` to auto-register with sprite groups if set on the subclass before instantiation.
-- **`player.py`** — `Player(CircleShape)`. Spawns at a given x/y with `PLAYER_RADIUS`. Has a `rotation` attribute (degrees, 0 = up). `triangle()` computes three vertices for rendering. `draw(screen)` calls `pygame.draw.polygon` with `LINE_WIDTH`. `update(dt)` is a stub.
+- **`player.py`** — `Player(CircleShape)`. Spawns at a given x/y with `PLAYER_RADIUS`. Has a `rotation` attribute (degrees). `triangle()` computes three vertices for rendering. `draw(screen)` calls `pygame.draw.polygon` with `LINE_WIDTH`. `rotate(dt)` increments rotation by `PLAYER_TURN_SPEED * dt`. `update(dt)` reads keyboard: A rotates left, D rotates right.
 - **`pyproject.toml`** — Project metadata and dependency declaration.
 - **`README.md`** — Empty.
 
@@ -98,6 +98,7 @@ python main.py
 - Add a clock / FPS cap to the game loop. *(done — `clock.tick(60)`, `dt` tracked)*
 - Create a `CircleShape` base class. *(done)*
 - Create a `Player` class (sprite, draw as triangle). *(done)*
+- Add player rotation (A/D keys). *(done)*
 - Add player movement and shooting.
 - Create an `Asteroid` class (random spawn, splitting behaviour).
 - Create a `Shot`/`Bullet` class (fired by the player).
