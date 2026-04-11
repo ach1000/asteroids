@@ -28,6 +28,7 @@ The project is at a very early skeleton stage:
 - **`main.py`** — Entry point. Initialises pygame, opens a 1280×720 window, and runs the game loop. The loop calls `log_state()`, processes the pygame event queue (exits on `QUIT`), fills the screen black, and flips the display.
 - **`constants.py`** — Module for magic-number constants. Currently defines `SCREEN_WIDTH = 1280` and `SCREEN_HEIGHT = 720`. All future magic numbers (speeds, sizes, etc.) should go here.
 - **`logger.py`** — Logging utility. Exports `log_state()` (call once per game-loop tick; snapshots sprite groups to `game_state.jsonl` at ~1 fps for up to 16 s) and `log_event()` (write discrete events to `game_events.jsonl`). Called each frame from `main.py`.
+- **`circleshape.py`** — Abstract base class `CircleShape(pygame.sprite.Sprite)`. Stores `position` (Vector2), `velocity` (Vector2), and `radius`. Subclasses must override `draw(screen)` and `update(dt)`. Uses `self.containers` to auto-register with sprite groups if set on the subclass before instantiation.
 - **`pyproject.toml`** — Project metadata and dependency declaration.
 - **`README.md`** — Empty.
 
@@ -39,6 +40,7 @@ The project is at a very early skeleton stage:
 asteroids/
 ├── main.py             # Entry point; run this to start the game
 ├── constants.py        # Game-wide constants (screen size, speeds, etc.)
+├── circleshape.py      # Abstract base: CircleShape(pygame.sprite.Sprite)
 ├── logger.py           # Logging helpers: log_state(), log_event()
 ├── pyproject.toml      # Project config and dependencies
 ├── uv.lock             # Locked dependency versions
@@ -92,6 +94,7 @@ python main.py
 
 - Wire `log_state()` into the game loop. *(done)*
 - Add a clock / FPS cap to the game loop. *(done — `clock.tick(60)`, `dt` tracked)*
+- Create a `CircleShape` base class. *(done)*
 - Create a `Player` class (sprite, movement, shooting).
 - Create an `Asteroid` class (random spawn, splitting behaviour).
 - Create a `Shot`/`Bullet` class (fired by the player).
