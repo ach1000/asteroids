@@ -26,10 +26,10 @@ Dependencies are managed via `pyproject.toml`. A virtual environment is expected
 The project is at a very early skeleton stage:
 
 - **`main.py`** — Entry point. Initialises pygame, opens a 1280×720 window, and runs the game loop. Creates `updatable`, `drawable`, and `asteroids` sprite groups. Sets class `.containers` before instantiation so objects auto-register. The loop: calls `log_state()`, processes the pygame event queue (exits on `QUIT`), fills the screen black, calls `updatable.update(dt)`, checks each asteroid for collision with the player (logs `player_hit`, prints "Game over!", calls `sys.exit()` on hit), draws all `drawable` objects, and flips the display.
-- **`constants.py`** — Module for magic-number constants. Defines `SCREEN_WIDTH`, `SCREEN_HEIGHT`, `PLAYER_RADIUS = 20`, `LINE_WIDTH = 2`, `PLAYER_TURN_SPEED = 300`, `PLAYER_SPEED = 200`, `PLAYER_SHOOT_SPEED = 500`, `ASTEROID_MIN_RADIUS = 20`, `ASTEROID_KINDS = 3`, `ASTEROID_SPAWN_RATE_SECONDS = 0.8`, `ASTEROID_MAX_RADIUS`, `SHOT_RADIUS = 5`. All future magic numbers should go here.
+- **`constants.py`** — Module for magic-number constants. Defines `SCREEN_WIDTH`, `SCREEN_HEIGHT`, `PLAYER_RADIUS = 20`, `LINE_WIDTH = 2`, `PLAYER_TURN_SPEED = 300`, `PLAYER_SPEED = 200`, `PLAYER_SHOOT_SPEED = 500`, `PLAYER_SHOOT_COOLDOWN_SECONDS = 0.3`, `ASTEROID_MIN_RADIUS = 20`, `ASTEROID_KINDS = 3`, `ASTEROID_SPAWN_RATE_SECONDS = 0.8`, `ASTEROID_MAX_RADIUS`, `SHOT_RADIUS = 5`. All future magic numbers should go here.
 - **`logger.py`** — Logging utility. Exports `log_state()` (call once per game-loop tick; snapshots sprite groups to `game_state.jsonl` at ~1 fps for up to 16 s) and `log_event()` (write discrete events to `game_events.jsonl`). Called each frame from `main.py`.
 - **`circleshape.py`** — Abstract base class `CircleShape(pygame.sprite.Sprite)`. Stores `position` (Vector2), `velocity` (Vector2), and `radius`. `collides_with(other)` returns `True` if `position.distance_to(other.position) <= self.radius + other.radius`. Subclasses must override `draw(screen)` and `update(dt)`. Uses `self.containers` to auto-register with sprite groups if set on the subclass before instantiation.
-- **`player.py`** — `Player(CircleShape)`. WASD controls rotation and movement. `shoot()` spawns a `Shot` at the player's position with velocity in the facing direction scaled by `PLAYER_SHOOT_SPEED`. Spacebar triggers `shoot()` each frame (continuous fire for now).
+- **`player.py`** — `Player(CircleShape)`. WASD controls rotation and movement. Has a `shoot_timer` (decremented each frame by `dt`). `shoot()` is rate-limited to one shot per `PLAYER_SHOOT_COOLDOWN_SECONDS = 0.3`; it spawns a `Shot` at the player's position with velocity in the facing direction scaled by `PLAYER_SHOOT_SPEED`. Spacebar triggers `shoot()` in `update()`.
 - **`asteroid.py`** — `Asteroid(CircleShape)`. Draws itself as a white circle outline (`LINE_WIDTH`). `update(dt)` moves in a straight line: `position += velocity * dt`. Radius is set at spawn time.
 - **`shot.py`** — `Shot(CircleShape)`. Small circle (radius `SHOT_RADIUS = 5`). Draws as white circle outline. `update(dt)` moves in a straight line: `position += velocity * dt`. Velocity is set by `Player.shoot()`.
 - **`asteroidfield.py`** — `AsteroidField(pygame.sprite.Sprite)`. Manages asteroid spawning. Every `ASTEROID_SPAWN_RATE_SECONDS` it picks a random screen edge, a random speed (40–100), and a random size (1–3 × `ASTEROID_MIN_RADIUS`), then spawns an `Asteroid`. Only in `updatable` (not `drawable`).
@@ -110,9 +110,5 @@ python main.py
 - Create `Asteroid` and `AsteroidField` classes. *(done)*
 - Add collision detection (player vs asteroids). *(done)*
 - Add shooting (spacebar, continuous). *(done)*
-- Add shot cooldown.
+- Add shot cooldown (0.3 s). *(done)*
 - Add shot-asteroid collision (split/destroy asteroids).
-- Create an `Asteroid` class (random spawn, splitting behaviour).
-- Create a `Shot`/`Bullet` class (fired by the player).
-- Add collision detection between shots, asteroids, and the player.
-- Add score tracking and game-over state.
