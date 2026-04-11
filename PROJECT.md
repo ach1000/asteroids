@@ -25,7 +25,7 @@ Dependencies are managed via `pyproject.toml`. A virtual environment is expected
 
 The project is at a very early skeleton stage:
 
-- **`main.py`** — Entry point. Prints the pygame version and screen dimensions on startup. No game loop, no rendering, no game objects yet.
+- **`main.py`** — Entry point. Initialises pygame, opens a 1280×720 window, and runs the game loop. The loop calls `log_state()`, processes the pygame event queue (exits on `QUIT`), fills the screen black, and flips the display.
 - **`constants.py`** — Module for magic-number constants. Currently defines `SCREEN_WIDTH = 1280` and `SCREEN_HEIGHT = 720`. All future magic numbers (speeds, sizes, etc.) should go here.
 - **`logger.py`** — Logging utility. Exports `log_state()` (call once per game-loop tick; snapshots sprite groups to `game_state.jsonl` at ~1 fps for up to 16 s) and `log_event()` (write discrete events to `game_events.jsonl`). Not yet wired into `main.py`.
 - **`pyproject.toml`** — Project metadata and dependency declaration.
@@ -89,8 +89,9 @@ python main.py
 
 ## Known TODOs / Next Steps
 
-- Implement the pygame window initialisation and game loop in `main.py`.
-- Wire `log_state()` into the game loop.
+- Wire `log_state()` into the game loop. *(done)*
+- Add a clock / FPS cap to the game loop.
+- Create a `Player` class (sprite, movement, shooting).
 - Create a `Player` class (sprite, movement, shooting).
 - Create an `Asteroid` class (random spawn, splitting behaviour).
 - Create a `Shot`/`Bullet` class (fired by the player).
