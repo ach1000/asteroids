@@ -23,7 +23,7 @@ Dependencies are managed via `pyproject.toml`. A virtual environment is expected
 
 ## Current State (as of project start)
 
-The project is at a very early skeleton stage:
+The project has basic functionality:
 
 - **`main.py`** — Entry point. Initialises pygame, opens a 1280×720 window, and runs the game loop. Creates `updatable`, `drawable`, `asteroids`, and `shots` sprite groups. Sets class `.containers` before instantiation so objects auto-register. The loop: calls `log_state()`, processes the pygame event queue (exits on `QUIT`), fills the screen black, calls `updatable.update(dt)`, checks each asteroid vs player (game over on hit) and each asteroid vs each shot (`asteroid.split()` + `shot.kill()` on hit), draws all `drawable` objects, and flips the display.
 - **`constants.py`** — Module for magic-number constants. Defines `SCREEN_WIDTH`, `SCREEN_HEIGHT`, `PLAYER_RADIUS = 20`, `LINE_WIDTH = 2`, `PLAYER_TURN_SPEED = 300`, `PLAYER_SPEED = 200`, `PLAYER_SHOOT_SPEED = 500`, `PLAYER_SHOOT_COOLDOWN_SECONDS = 0.3`, `ASTEROID_MIN_RADIUS = 20`, `ASTEROID_KINDS = 3`, `ASTEROID_SPAWN_RATE_SECONDS = 0.8`, `ASTEROID_MAX_RADIUS`, `SHOT_RADIUS = 5`. All future magic numbers should go here.
@@ -113,3 +113,17 @@ python main.py
 - Add shot cooldown (0.3 s). *(done)*
 - Add shot-asteroid collision (split/destroy asteroids). *(done — kill only, no splitting yet)*
 - Implement asteroid splitting on destruction. *(done)*
+- Add starting/menu screen (so the game doesn't quit straight to desktop)
+- Add a scoring system
+- Implement multiple lives and respawning
+- Add an explosion effect for asteroids
+- Add acceleration to player movement (instead of instant speed)
+- Make objects wrap around the screen edges instead of disappearing
+- Add a background image
+- Create different weapon types
+- Make asteroids lumpy instead of perfectly round
+- Give the ship a triangular hitbox instead of a circular one
+- Add a shield power-up
+- Add a speed power-up
+- Add bombs that can be dropped
+- Add alien ships that periodically appear for bonus points
