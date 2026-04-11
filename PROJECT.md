@@ -25,7 +25,7 @@ Dependencies are managed via `pyproject.toml`. A virtual environment is expected
 
 The project is at a very early skeleton stage:
 
-- **`main.py`** — Entry point. Initialises pygame, opens a 1280×720 window, and runs the game loop. Creates `updatable`, `drawable`, and `asteroids` sprite groups. Sets class `.containers` before instantiation so objects auto-register. The loop: calls `log_state()`, processes the pygame event queue (exits on `QUIT`), fills the screen black, calls `updatable.update(dt)`, checks each asteroid for collision with the player (logs `player_hit`, prints "Game over!", calls `sys.exit()` on hit), draws all `drawable` objects, and flips the display.
+- **`main.py`** — Entry point. Initialises pygame, opens a 1280×720 window, and runs the game loop. Creates `updatable`, `drawable`, `asteroids`, and `shots` sprite groups. Sets class `.containers` before instantiation so objects auto-register. The loop: calls `log_state()`, processes the pygame event queue (exits on `QUIT`), fills the screen black, calls `updatable.update(dt)`, checks each asteroid vs player (game over on hit) and each asteroid vs each shot (`asteroid.kill()` + `shot.kill()` on hit), draws all `drawable` objects, and flips the display.
 - **`constants.py`** — Module for magic-number constants. Defines `SCREEN_WIDTH`, `SCREEN_HEIGHT`, `PLAYER_RADIUS = 20`, `LINE_WIDTH = 2`, `PLAYER_TURN_SPEED = 300`, `PLAYER_SPEED = 200`, `PLAYER_SHOOT_SPEED = 500`, `PLAYER_SHOOT_COOLDOWN_SECONDS = 0.3`, `ASTEROID_MIN_RADIUS = 20`, `ASTEROID_KINDS = 3`, `ASTEROID_SPAWN_RATE_SECONDS = 0.8`, `ASTEROID_MAX_RADIUS`, `SHOT_RADIUS = 5`. All future magic numbers should go here.
 - **`logger.py`** — Logging utility. Exports `log_state()` (call once per game-loop tick; snapshots sprite groups to `game_state.jsonl` at ~1 fps for up to 16 s) and `log_event()` (write discrete events to `game_events.jsonl`). Called each frame from `main.py`.
 - **`circleshape.py`** — Abstract base class `CircleShape(pygame.sprite.Sprite)`. Stores `position` (Vector2), `velocity` (Vector2), and `radius`. `collides_with(other)` returns `True` if `position.distance_to(other.position) <= self.radius + other.radius`. Subclasses must override `draw(screen)` and `update(dt)`. Uses `self.containers` to auto-register with sprite groups if set on the subclass before instantiation.
@@ -111,4 +111,5 @@ python main.py
 - Add collision detection (player vs asteroids). *(done)*
 - Add shooting (spacebar, continuous). *(done)*
 - Add shot cooldown (0.3 s). *(done)*
-- Add shot-asteroid collision (split/destroy asteroids).
+- Add shot-asteroid collision (split/destroy asteroids). *(done — kill only, no splitting yet)*
+- Implement asteroid splitting on destruction.
