@@ -27,6 +27,7 @@ The project is at a very early skeleton stage:
 
 - **`main.py`** — Entry point. Prints the pygame version and screen dimensions on startup. No game loop, no rendering, no game objects yet.
 - **`constants.py`** — Module for magic-number constants. Currently defines `SCREEN_WIDTH = 1280` and `SCREEN_HEIGHT = 720`. All future magic numbers (speeds, sizes, etc.) should go here.
+- **`logger.py`** — Logging utility. Exports `log_state()` (call once per game-loop tick; snapshots sprite groups to `game_state.jsonl` at ~1 fps for up to 16 s) and `log_event()` (write discrete events to `game_events.jsonl`). Not yet wired into `main.py`.
 - **`pyproject.toml`** — Project metadata and dependency declaration.
 - **`README.md`** — Empty.
 
@@ -38,8 +39,10 @@ The project is at a very early skeleton stage:
 asteroids/
 ├── main.py          # Entry point; run this to start the game
 ├── constants.py     # Game-wide constants (screen size, speeds, etc.)
+├── logger.py        # Logging helpers: log_state(), log_event()
 ├── pyproject.toml   # Project config and dependencies
 ├── Makefile         # Convenience targets: install, run
+├── .gitignore       # Excludes .venv, __pycache__, *.jsonl logs
 ├── README.md        # (currently empty)
 └── PROJECT.md        # This file
 ```
@@ -75,9 +78,19 @@ python main.py
 
 ---
 
+## Logging
+
+- `log_state()` — call inside the game loop every frame. Snapshots local variables (pygame surface → screen size, sprite `Group`s, standalone sprites with a `position` attribute) to `game_state.jsonl` once per second for up to 16 seconds.
+- `log_event(event_type, **details)` — call whenever a discrete game event occurs (e.g. shot fired, asteroid split). Writes to `game_events.jsonl`.
+- Both `.jsonl` files are gitignored. `jq` (v1.7, system-installed) can be used to pretty-print them.
+- **Next step:** import and call `log_state()` from the game loop in `main.py`.
+
+---
+
 ## Known TODOs / Next Steps
 
 - Implement the pygame window initialisation and game loop in `main.py`.
+- Wire `log_state()` into the game loop.
 - Create a `Player` class (sprite, movement, shooting).
 - Create an `Asteroid` class (random spawn, splitting behaviour).
 - Create a `Shot`/`Bullet` class (fired by the player).
