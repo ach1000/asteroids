@@ -25,7 +25,8 @@ Dependencies are managed via `pyproject.toml`. A virtual environment is expected
 
 The project is at a very early skeleton stage:
 
-- **`main.py`** — Entry point. Currently only prints the pygame version and exits. No game loop, no rendering, no game objects yet.
+- **`main.py`** — Entry point. Prints the pygame version and screen dimensions on startup. No game loop, no rendering, no game objects yet.
+- **`constants.py`** — Module for magic-number constants. Currently defines `SCREEN_WIDTH = 1280` and `SCREEN_HEIGHT = 720`. All future magic numbers (speeds, sizes, etc.) should go here.
 - **`pyproject.toml`** — Project metadata and dependency declaration.
 - **`README.md`** — Empty.
 
@@ -36,6 +37,7 @@ The project is at a very early skeleton stage:
 ```
 asteroids/
 ├── main.py          # Entry point; run this to start the game
+├── constants.py     # Game-wide constants (screen size, speeds, etc.)
 ├── pyproject.toml   # Project config and dependencies
 ├── Makefile         # Convenience targets: install, run
 ├── README.md        # (currently empty)
