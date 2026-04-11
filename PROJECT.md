@@ -26,10 +26,12 @@ Dependencies are managed via `pyproject.toml`. A virtual environment is expected
 The project is at a very early skeleton stage:
 
 - **`main.py`** — Entry point. Initialises pygame, opens a 1280×720 window, and runs the game loop. Creates `updatable` and `drawable` sprite groups. Sets `Player.containers` before instantiation so the player auto-registers. The loop calls `log_state()`, processes the pygame event queue (exits on `QUIT`), fills the screen black, calls `updatable.update(dt)`, draws all `drawable` objects, and flips the display.
-- **`constants.py`** — Module for magic-number constants. Defines `SCREEN_WIDTH = 1280`, `SCREEN_HEIGHT = 720`, `PLAYER_RADIUS = 20`, `LINE_WIDTH = 2`, `PLAYER_TURN_SPEED = 300`, `PLAYER_SPEED = 200`. All future magic numbers (speeds, sizes, etc.) should go here.
+- **`constants.py`** — Module for magic-number constants. Defines `SCREEN_WIDTH`, `SCREEN_HEIGHT`, `PLAYER_RADIUS = 20`, `LINE_WIDTH = 2`, `PLAYER_TURN_SPEED = 300`, `PLAYER_SPEED = 200`, `ASTEROID_MIN_RADIUS = 20`, `ASTEROID_KINDS = 3`, `ASTEROID_SPAWN_RATE_SECONDS = 0.8`, `ASTEROID_MAX_RADIUS = ASTEROID_MIN_RADIUS * ASTEROID_KINDS`. All future magic numbers should go here.
 - **`logger.py`** — Logging utility. Exports `log_state()` (call once per game-loop tick; snapshots sprite groups to `game_state.jsonl` at ~1 fps for up to 16 s) and `log_event()` (write discrete events to `game_events.jsonl`). Called each frame from `main.py`.
 - **`circleshape.py`** — Abstract base class `CircleShape(pygame.sprite.Sprite)`. Stores `position` (Vector2), `velocity` (Vector2), and `radius`. Subclasses must override `draw(screen)` and `update(dt)`. Uses `self.containers` to auto-register with sprite groups if set on the subclass before instantiation.
 - **`player.py`** — `Player(CircleShape)`. Spawns at a given x/y with `PLAYER_RADIUS`. Has a `rotation` attribute (degrees). `triangle()` computes three vertices for rendering. `draw(screen)` calls `pygame.draw.polygon` with `LINE_WIDTH`. `rotate(dt)` increments rotation by `PLAYER_TURN_SPEED * dt`. `move(dt)` advances position along the facing direction by `PLAYER_SPEED * dt`. `update(dt)` reads keyboard: A/D rotate, W/S move forward/backward.
+- **`asteroid.py`** — `Asteroid(CircleShape)`. Draws itself as a white circle outline (`LINE_WIDTH`). `update(dt)` moves in a straight line: `position += velocity * dt`. Radius is set at spawn time.
+- **`asteroidfield.py`** — `AsteroidField(pygame.sprite.Sprite)`. Manages asteroid spawning. Every `ASTEROID_SPAWN_RATE_SECONDS` it picks a random screen edge, a random speed (40–100), and a random size (1–3 × `ASTEROID_MIN_RADIUS`), then spawns an `Asteroid`. Only in `updatable` (not `drawable`).
 - **`pyproject.toml`** — Project metadata and dependency declaration.
 - **`README.md`** — Empty.
 
@@ -42,7 +44,9 @@ asteroids/
 ├── main.py             # Entry point; run this to start the game
 ├── constants.py        # Game-wide constants (screen size, speeds, etc.)
 ├── circleshape.py      # Abstract base: CircleShape(pygame.sprite.Sprite)
-├── player.py           # Player(CircleShape): triangle ship, draw/update
+├── player.py           # Player(CircleShape): triangle ship, WASD controls
+├── asteroid.py         # Asteroid(CircleShape): circle, moves by velocity
+├── asteroidfield.py    # AsteroidField: spawns asteroids on a timer
 ├── logger.py           # Logging helpers: log_state(), log_event()
 ├── pyproject.toml      # Project config and dependencies
 ├── uv.lock             # Locked dependency versions
@@ -101,6 +105,7 @@ python main.py
 - Create a `Player` class (sprite, draw as triangle). *(done)*
 - Add player rotation (A/D keys). *(done)*
 - Add player movement (W/S keys). *(done)*
+- Create `Asteroid` and `AsteroidField` classes. *(done)*
 - Add shooting.
 - Create an `Asteroid` class (random spawn, splitting behaviour).
 - Create a `Shot`/`Bullet` class (fired by the player).
