@@ -21,7 +21,7 @@ Dependencies are managed via `pyproject.toml`. A virtual environment is expected
 
 ---
 
-## Current State (as of project start)
+## Current State
 
 The project has basic functionality:
 
@@ -34,6 +34,7 @@ The project has basic functionality:
 - **`shot.py`** — `Shot(CircleShape)`. Small circle (radius `SHOT_RADIUS = 5`). Draws as white circle outline. `update(dt)` moves in a straight line: `position += velocity * dt`. Velocity is set by `Player.shoot()`.
 - **`asteroidfield.py`** — `AsteroidField(pygame.sprite.Sprite)`. Manages asteroid spawning. Every `ASTEROID_SPAWN_RATE_SECONDS` it picks a random screen edge, a random speed (40–100), and a random size (1–3 × `ASTEROID_MIN_RADIUS`), then spawns an `Asteroid`. Only in `updatable` (not `drawable`).
 - **`pyproject.toml`** — Project metadata and dependency declaration.
+- **`Makefile`** — Convenience targets for `sync`, `run`, and `clean`. `clean` removes generated Python cache files, build artifacts, and the `game_state.jsonl` / `game_events.jsonl` log files, but leaves `.venv/` intact.
 - **`README.md`** — Empty.
 
 ---
@@ -52,7 +53,7 @@ asteroids/
 ├── logger.py           # Logging helpers: log_state(), log_event()
 ├── pyproject.toml      # Project config and dependencies
 ├── uv.lock             # Locked dependency versions
-├── Makefile            # Convenience targets: install, run
+├── Makefile            # Convenience targets: sync, run, clean
 ├── .gitignore          # Excludes .venv, __pycache__, *.jsonl logs
 ├── .python-version     # Pins Python version for uv
 ├── README.md           # (currently empty)
@@ -78,6 +79,7 @@ Preferred — via `make`:
 ```bash
 make sync      # syncs the .venv and installs dependencies (uv sync)
 make run       # runs the game via uv run python main.py (default target)
+make clean     # removes generated caches, build artifacts, and game logs
 ```
 
 Manually:
@@ -96,6 +98,7 @@ python main.py
 - `log_state()` — call inside the game loop every frame. Snapshots local variables (pygame surface → screen size, sprite `Group`s, standalone sprites with a `position` attribute) to `game_state.jsonl` once per second for up to 16 seconds.
 - `log_event(event_type, **details)` — call whenever a discrete game event occurs (e.g. shot fired, asteroid split). Writes to `game_events.jsonl`.
 - Both `.jsonl` files are gitignored. `jq` (v1.7, system-installed) can be used to pretty-print them.
+- `make clean` removes both generated log files along with common Python cache/build artifacts.
 
 ---
 
@@ -111,7 +114,7 @@ python main.py
 - Add collision detection (player vs asteroids). *(done)*
 - Add shooting (spacebar, continuous). *(done)*
 - Add shot cooldown (0.3 s). *(done)*
-- Add shot-asteroid collision (split/destroy asteroids). *(done — kill only, no splitting yet)*
+- Add shot-asteroid collision (split/destroy asteroids). *(done)*
 - Implement asteroid splitting on destruction. *(done)*
 - Add starting/menu screen (so the game doesn't quit straight to desktop)
 - Add a scoring system
